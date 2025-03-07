@@ -1,8 +1,15 @@
 import Modal from 'react-modal';
 import { LiaWindowCloseSolid } from 'react-icons/lia';
 import s from './ImageModal.module.css';
+import { Image } from '../App/App.type';
 
-const ImageModal = ({ isOpen, onCloseModal, image }) => {
+type Props = {
+  isOpen: boolean;
+  image: Image | null;
+  onCloseModal: () => void;
+};
+
+const ImageModal = ({ isOpen, onCloseModal, image }: Props) => {
   return (
     <Modal
       overlayClassName={s.backdrop}

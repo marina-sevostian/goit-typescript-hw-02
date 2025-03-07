@@ -1,19 +1,23 @@
 import { IoSearchSharp } from 'react-icons/io5';
 import s from './SearchBar.module.css';
-
+import { FormEvent } from 'react';
 import toast from 'react-hot-toast';
 
-const SearchBar = ({ setQuery }) => {
-  const handleSumbmit = e => {
+type Props = {
+  setQuery: (value: string) => void;
+};
+
+const SearchBar = ({ setQuery }: Props) => {
+  const handleSumbmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.target;
-    const query = form.elements.query.value.trim();
-    if (!query) {
+    const form = e.currentTarget;
+    const query = form.elements.namedItem('query') as HTMLInputElement;
+    if (!query || query.value.trim()) {
       return toast.error(
         'The field is empty, enter text to search for an image.'
       );
     }
-    setQuery(query);
+    setQuery(query.value.trim());
     form.reset();
   };
   return (
@@ -28,7 +32,7 @@ const SearchBar = ({ setQuery }) => {
           placeholder="Search images and photos"
         />
         <button className={s.btn} type="submit">
-          <IoSearchSharp size="20"/>
+          <IoSearchSharp size="20" />
           Search
         </button>
       </form>

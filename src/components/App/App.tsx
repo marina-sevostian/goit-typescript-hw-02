@@ -1,24 +1,31 @@
 import { useEffect, useState } from 'react';
-import SearchBar from './components/SearchBar/SearchBar';
-import fetchImages from './services/api';
-import ImageGallery from './components/ImageGallery/ImageGallery';
-import ErrorMessage from './components/ErrorMessage/ErrorMessage';
-import Loader from './components/Loader/Loader';
+import SearchBar from '../SearchBar/SearchBar';
+import fetchImages from '../../services/api';
+import ImageGallery from '../ImageGallery/ImageGallery';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import Loader from '../Loader/Loader';
 import { Toaster } from 'react-hot-toast';
-import LoaderMoreBtn from './components/LoadMoreBtn/LoadMoreBtn';
+import LoaderMoreBtn from '../LoadMoreBtn/LoadMoreBtn';
 import './App.css';
 import Modal from 'react-modal';
-import ImageModal from './components/ImageModal/ImageModal';
+import ImageModal from '../ImageModal/ImageModal';
+import { Image } from './App.type';
+
+interface ImageData {
+  total_pages: number;
+  total: number;
+  results: Image[];
+}
 
 function App() {
-  const [query, setQuery] = useState('');
-  const [page, setPage] = useState(1);
-  const [isError, setIsError] = useState(false);
-  const [image, setImage] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState(0);
-  const [modalIsOpen, setIsOpen] = useState(false);
-  const [selectImage, setSelectImage] = useState(0);
+  const [query, setQuery] = useState<string>('');
+  const [page, setPage] = useState<number>(1);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [image, setImage] = useState<Image[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [modalIsOpen, setIsOpen] = useState<boolean>(false);
+  const [selectImage, setSelectImage] = useState<Image | null>(null);
 
   useEffect(() => {
     Modal.setAppElement('#root');
@@ -26,11 +33,15 @@ function App() {
 
   useEffect(() => {
     if (!query) return;
-    const getData = async () => {
+    const getData = async (): Promise<void> => {
       try {
         setIsError(false);
         setIsLoading(true);
-        const data = await fetchImages(query, page);
+        const data: ImageData | undefined = await fetchImages(query, page);
+        if (!data) {
+          throw new Error('No data received from the API');
+        }
+
         setImage(prev => [...prev, ...data.results]);
         setTotalPages(data.total_pages);
         console.log(data);
@@ -43,22 +54,22 @@ function App() {
     getData();
   }, [query, page]);
 
-  const handleSetQuery = searchValue => {
+  const handleSetQuery = (searchValue: string): void => {
     setQuery(searchValue);
     setImage([]);
     setPage(1);
   };
 
-  const handleChangePage = () => {
+  const handleChangePage = (): void => {
     setPage(prev => prev + 1);
   };
 
-  const openModal = image => {
+  const openModal = (image: Image): void => {
     setSelectImage(image);
     setIsOpen(true);
   };
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     setIsOpen(false);
   };
 
