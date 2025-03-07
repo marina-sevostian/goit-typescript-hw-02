@@ -12,7 +12,7 @@ const SearchBar = ({ setQuery }: Props) => {
     e.preventDefault();
     const form = e.currentTarget;
     const query = form.elements.namedItem('query') as HTMLInputElement;
-    if (!query || query.value.trim()) {
+    if (!query || !query.value.trim()) {
       return toast.error(
         'The field is empty, enter text to search for an image.'
       );
